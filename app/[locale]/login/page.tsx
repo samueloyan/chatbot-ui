@@ -2,6 +2,7 @@ import { Brand } from "@/components/ui/brand"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { getSupabaseEnv } from "@/lib/supabase/env"
 import { createClient } from "@/lib/supabase/server"
 import { Database } from "@/supabase/types"
 import { createServerClient } from "@supabase/ssr"
@@ -19,18 +20,33 @@ export default async function Login({
 }: {
   searchParams: { message: string }
 }) {
+  const { url, anonKey, isConfigured } = getSupabaseEnv()
+
+  if (!isConfigured) {
+    return (
+      <div className="flex w-full flex-1 items-center justify-center px-8">
+        <div className="bg-background border-border max-w-xl rounded-lg border p-6 text-sm">
+          <p className="font-semibold">
+            Supabase is not configured for this deployment.
+          </p>
+          <p className="text-muted-foreground mt-2">
+            Add <code>NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+            <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in your Vercel project
+            environment variables, then redeploy.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   const cookieStore = cookies()
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
-        }
+  const supabase = createServerClient<Database>(url!, anonKey!, {
+    cookies: {
+      get(name: string) {
+        return cookieStore.get(name)?.value
       }
     }
-  )
+  })
   const session = (await supabase.auth.getSession()).data.session
 
   if (session) {

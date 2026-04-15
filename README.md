@@ -88,6 +88,14 @@ Open a terminal in the root directory of your local Chatbot UI repository and ru
 npm install
 ```
 
+Optional helper:
+
+```bash
+npm run create-chatbot
+```
+
+This creates `.env.local` from `.env.local.example` when needed and prints the remaining setup steps.
+
 ### 3. Install Supabase & Run Locally
 
 #### Why Supabase?
