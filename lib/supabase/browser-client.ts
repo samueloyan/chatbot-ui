@@ -1,7 +1,10 @@
 import { Database } from "@/supabase/types"
 import { createBrowserClient } from "@supabase/ssr"
+import { getSupabaseEnv } from "./env"
+
+const { url, anonKey } = getSupabaseEnv()
 
 export const supabase = createBrowserClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  url || "https://example.supabase.co",
+  anonKey || "public-anon-key"
 )
